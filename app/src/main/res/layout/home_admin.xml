@@ -13,41 +13,70 @@
         android:id="@+id/headerLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@android:color/white"
-        android:paddingStart="16dp"
+        android:orientation="vertical"  android:background="@android:color/white"
         android:paddingTop="12dp"
-        android:paddingEnd="16dp"
         android:paddingBottom="12dp"
         android:elevation="4dp"
-        android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:id="@+id/txtHi"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Xin chào Khách"
-            android:textSize="18sp"
-            android:textColor="#333333"
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center_vertical">
 
-        <ImageButton
-            android:id="@+id/btnUser"
-            android:layout_width="44dp"  android:layout_height="44dp" android:src="@drawable/user_icon"
-            android:scaleType="fitCenter" android:background="?attr/selectableItemBackgroundBorderless"
-            />
+            <TextView
+                android:id="@+id/txtHi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Xin chào Admin" android:textSize="18sp"
+                android:textColor="#333333"
+                android:textStyle="bold" />
 
-        <ImageButton
-            android:id="@+id/btnCart"
-            android:layout_width="44dp"  android:layout_height="44dp" android:src="@drawable/cart"
-            android:scaleType="fitCenter" android:background="?attr/selectableItemBackgroundBorderless"
-            android:layout_marginStart="8dp"/>
+            <TextView
+                android:id="@+id/txtLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đăng Xuất"
+                android:textSize="16sp"
+                android:textColor="#1976D2"
+                android:textStyle="bold"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="logout"
+                android:background="?attr/selectableItemBackground"/>
+
+            <ImageButton
+                android:id="@+id/btnUser"
+                android:layout_width="44dp"  android:layout_height="44dp" android:src="@drawable/user_icon"
+                android:scaleType="fitCenter" android:background="?attr/selectableItemBackgroundBorderless"
+                />
+
+            <ImageButton
+                android:id="@+id/btnCart"
+                android:layout_width="44dp"  android:layout_height="44dp" android:src="@drawable/cart"
+                android:scaleType="fitCenter" android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/search_background" app:iconifiedByDefault="false"
+            app:queryHint="Tìm kiếm sản phẩm cần quản lý..."
+            android:layout_marginBottom="4dp" />
     </LinearLayout>
-
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -94,8 +123,8 @@
                 android:orientation="horizontal" >
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:paddingBottom="8dp"
@@ -105,10 +134,9 @@
                     android:textStyle="bold" />
 
                 <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:onClick="add"
-                    android:background="@drawable/images"/>
+                    android:layout_width="30dp"      android:layout_height="30dp"     android:onClick="add"
+                    android:background="@drawable/images"
+                    android:contentDescription="Thêm sản phẩm mới"/>
             </LinearLayout>
 
             <GridView

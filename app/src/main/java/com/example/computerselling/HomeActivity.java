@@ -15,19 +15,23 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView; // IMPORT MỚI
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.List; // IMPORT MỚI
 
 public class HomeActivity extends AppCompatActivity {
 
-    private ArrayList<PC> aPC;
+    private ArrayList<PC> aPC; // Danh sách sản phẩm GỐC từ Firestore
+    private ArrayList<PC> filteredList; // Danh sách sản phẩm ĐÃ LỌC để hiển thị trên GridView
     private GridView gridView;
     private FirebaseFirestore db;
     private ListAdapter adapter;
     private String currentUsername;
+    private SearchView searchView; // KHAI BÁO MỚI
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +40,7 @@ public class HomeActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         aPC = new ArrayList<>();
+        filteredList = new ArrayList<>(); // KHỞI TẠO filteredList
 
         // 1. LẤY USERNAME TỪ SharedPreferences VÀ HIỂN THỊ
         SharedPreferences sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
@@ -43,7 +48,6 @@ public class HomeActivity extends AppCompatActivity {
 
         TextView welcomeTextView = findViewById(R.id.txtHi); // Giả sử ID là txtHi
         if (welcomeTextView != null) {
-            // HIỂN THỊ USERNAME ĐÃ LƯU
             welcomeTextView.setText("Xin chào " + currentUsername);
         } else {
             Log.e("HomeActivity", "Không tìm thấy TextView có ID: txtHi");
@@ -52,19 +56,25 @@ public class HomeActivity extends AppCompatActivity {
         // 2. Thiết lập GridView và Adapter
         gridView = findViewById(R.id.grid_view);
 
-        adapter = new ListAdapter(this, aPC);
+        // Sử dụng filteredList cho Adapter thay vì aPC
+        adapter = new ListAdapter(this, filteredList);
         gridView.setAdapter(adapter);
 
-        // 3. Xử lý sự kiện click Item trên GridView
-        gridView.setOnItemClickListener((AdapterView<?> parent, android.view.View view, int position, long id) -> {
-            PC selectedPC = aPC.get(position);
+        // 3. Ánh xạ SearchView và thiết lập listener
+        searchView = findViewById(R.id.searchView); // ID đã thêm trong XML
+        setupSearchView(); // Gọi phương thức cài đặt tìm kiếm
 
-            Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
+        // 4. Xử lý sự kiện click Item trên GridView
+        gridView.setOnItemClickListener((AdapterView<?> parent, android.view.View view, int position, long id) -> {
+            // Lấy PC từ danh sách ĐÃ LỌC
+            PC selectedPC = filteredList.get(position);
+
+            Intent intent = new Intent(HomeActivity.this, ProductDetailUserActivity.class);
             intent.putExtra("selected_pc", selectedPC);
             startActivity(intent);
         });
 
-        // 4. Xử lý sự kiện các nút điều hướng
+        // 5. Xử lý sự kiện các nút điều hướng
         ImageButton btnCart = findViewById(R.id.btnCart);
         if (btnCart != null) {
             btnCart.setOnClickListener(v -> {
@@ -77,7 +87,6 @@ public class HomeActivity extends AppCompatActivity {
         if (btnUser != null) {
             btnUser.setOnClickListener(v -> {
                 Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
-                // Truyền username sang Profile
                 intent.putExtra("username", currentUsername);
                 startActivity(intent);
             });
@@ -85,18 +94,68 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 // ---------------------------------------------------------------------------------------
+// PHẦN MỚI: TRIỂN KHAI CHỨC NĂNG TÌM KIẾM
+// ---------------------------------------------------------------------------------------
+
+    private void setupSearchView() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Xử lý khi người dùng nhấn nút tìm kiếm
+                filterProducts(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Xử lý khi văn bản thay đổi (Tìm kiếm theo thời gian thực)
+                filterProducts(newText);
+                return true;
+            }
+        });
+    }
 
     /**
-     * Phương thức được gọi khi Activity hiển thị trở lại.
-     * Đảm bảo dữ liệu mới nhất (bao gồm sản phẩm test) được tải lại.
+     * Hàm thực hiện lọc dữ liệu dựa trên văn bản tìm kiếm (query).
+     * @param query Văn bản người dùng nhập vào.
      */
+    private void filterProducts(String query) {
+        // Xóa dữ liệu cũ trong danh sách hiển thị
+        filteredList.clear();
+
+        if (query == null || query.isEmpty()) {
+            // Nếu query rỗng, hiển thị toàn bộ danh sách gốc
+            filteredList.addAll(aPC);
+        } else {
+            String lowerCaseQuery = query.toLowerCase().trim();
+            // Lặp qua danh sách gốc (aPC) và kiểm tra
+            for (PC pc : aPC) {
+                // Lọc theo tên sản phẩm. Giả sử class PC có phương thức getName()
+                if (pc.getName() != null && pc.getName().toLowerCase().contains(lowerCaseQuery)) {
+                    filteredList.add(pc);
+                }
+            }
+        }
+
+        // Thông báo cho adapter biết dữ liệu đã thay đổi để GridView cập nhật
+        adapter.notifyDataSetChanged();
+        // Cập nhật chiều cao sau khi lọc
+        setDynamicHeight(gridView);
+
+        if (filteredList.isEmpty() && !query.isEmpty()) {
+            Toast.makeText(this, "Không tìm thấy sản phẩm nào.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+// ---------------------------------------------------------------------------------------
+// CÁC PHƯƠNG THỨC CÒN LẠI (GIỮ NGUYÊN)
+// ---------------------------------------------------------------------------------------
+
     @Override
     protected void onResume() {
         super.onResume();
         loadProducts();
     }
-
-// ---------------------------------------------------------------------------------------
 
     /**
      * Tải danh sách sản phẩm (PC) từ collection "Computer" của Firestore.
@@ -105,18 +164,28 @@ public class HomeActivity extends AppCompatActivity {
         db.collection("Computer")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    aPC.clear();
+                    aPC.clear(); // Xóa list gốc
 
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         try {
                             PC pc = doc.toObject(PC.class);
                             if (pc != null) {
-                                pc.setId(doc.getId()); // Cập nhật ID từ document ID
+                                pc.setId(doc.getId());
                                 aPC.add(pc);
                             }
                         } catch (Exception e) {
                             Log.e("Firestore", "Lỗi ánh xạ dữ liệu Document: " + doc.getId(), e);
                         }
+                    }
+
+                    // Sau khi tải xong dữ liệu gốc (aPC), cập nhật filteredList để hiển thị
+                    // Nếu đã có văn bản tìm kiếm, giữ nguyên bộ lọc hiện tại.
+                    if (searchView.getQuery().toString().isEmpty()) {
+                        filteredList.clear();
+                        filteredList.addAll(aPC);
+                    } else {
+                        // Nếu đang có tìm kiếm, chạy lại bộ lọc với query hiện tại
+                        filterProducts(searchView.getQuery().toString());
                     }
 
                     adapter.notifyDataSetChanged();
@@ -127,8 +196,6 @@ public class HomeActivity extends AppCompatActivity {
                     Toast.makeText(this, "Lỗi tải dữ liệu sản phẩm.", Toast.LENGTH_LONG).show();
                 });
     }
-
-// ---------------------------------------------------------------------------------------
 
     /**
      * Hàm tính toán và thiết lập chiều cao động cho GridView.
@@ -173,8 +240,6 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(HomeActivity.this, AddActivity.class);
         startActivity(intent);
     }
-
-// ---------------------------------------------------------------------------------------
 
     /**
      * Phương thức xử lý đăng xuất.
