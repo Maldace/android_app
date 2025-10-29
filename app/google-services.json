@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "792399574698",
+    "project_id": "btandroid-9e81f",
+    "storage_bucket": "btandroid-9e81f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:792399574698:android:ae46830a2538d30fe942d3",
+        "android_client_info": {
+          "package_name": "com.example.computerselling"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRHL0c0GRQJoYKbKpnTmmuOq1K3kTcVMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

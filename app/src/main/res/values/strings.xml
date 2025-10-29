@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Computer Selling</string>
+    <string-array name="color">
+        <item>Đỏ</item>
+        <item>Xanh lá</item>
+        <item>Xanh dương</item>
+        <item>Vàng</item>
+        <item>Đen</item>
+        <item>Trắng</item>
+    </string-array>
+</resources>
