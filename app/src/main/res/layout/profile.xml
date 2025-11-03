@@ -100,16 +100,37 @@
                 <ImageView
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:src="@drawable/mail"/>
+                    android:src="@drawable/address"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="app.android@mail.com"
+                    android:text="ABCD"
                     android:textSize="20dp"
-                    android:id="@+id/txtPMail"
+                    android:id="@+id/txtPAddress"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"/>
             </LinearLayout>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="25dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:orientation="horizontal" >
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/mail"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="app.android@mail.com"
+                android:textSize="20dp"
+                android:id="@+id/txtPMail"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"/>
+        </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -143,7 +164,7 @@
         android:layout_height="match_parent"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:layout_marginTop="550dp"
+        android:layout_marginTop="620dp"
         android:orientation="horizontal" >
         <Button
             android:layout_width="wrap_content"

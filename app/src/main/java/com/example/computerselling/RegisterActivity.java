@@ -37,14 +37,16 @@ public class RegisterActivity extends AppCompatActivity {
         EditText etBirth = findViewById(R.id.txtRBirth);
         EditText etPhone = findViewById(R.id.txtRPhone);
         EditText etMail = findViewById(R.id.txtRMail);
+        EditText etAddress = findViewById(R.id.txtRAddress);
 
         String name=etName.getText().toString().trim();
         String pass=etPass.getText().toString().trim();
         String birth=etBirth.getText().toString().trim();
         String phone=etPhone.getText().toString().trim();
         String mail=etMail.getText().toString().trim();
+        String address=etAddress.getText().toString().trim();
 
-        User usr = new User(birth, mail, name, pass, phone, "user");
+        User usr = new User(address, birth, mail, name, pass, phone, "user");
         db.collection("Acc")
                 .add(usr) // firestore tạo id random
                 .addOnSuccessListener(documentReference -> {

@@ -1,6 +1,8 @@
 package com.example.computerselling;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText; // Cần import EditText
@@ -33,7 +35,15 @@ public class CheckoutActivity extends AppCompatActivity {
         etName = findViewById(R.id.et_name);
         etPhone = findViewById(R.id.et_phone);
         etAddress = findViewById(R.id.et_address);
+        SharedPreferences sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
 
+        String username = sharedPref.getString("current_username", "Khách");
+        String phone_num = sharedPref.getString("current_phone", "Khách");
+        String addr = sharedPref.getString("current_address", "Khách");
+
+        etName.setText(username);
+        etPhone.setText(phone_num);
+        etAddress.setText(addr);
         // Hiển thị tổng tiền
         String formattedTotal = String.format(Locale.getDefault(), "Tổng tiền cần thanh toán: %,d VND", total);
         tvTotal.setText(formattedTotal);

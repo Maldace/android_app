@@ -18,6 +18,7 @@ public class ProfileActivity extends AppCompatActivity {
         TextView txtName = findViewById(R.id.txtPName);
         TextView txtBirth = findViewById(R.id.txtPBirth);
         TextView txtPhone = findViewById(R.id.txtPPhone);
+        TextView txtAddress = findViewById(R.id.txtPAddress);
         TextView txtMail = findViewById(R.id.txtPMail);
         TextView txtPass = findViewById(R.id.txtPPass);
 
@@ -25,12 +26,14 @@ public class ProfileActivity extends AppCompatActivity {
         String username = sharedPref.getString("current_username", "Khách");
         String birth = sharedPref.getString("current_birth", "Khách");
         String phone = sharedPref.getString("current_phone", "Khách");
+        String address = sharedPref.getString("current_address", "Khách");
         String mail = sharedPref.getString("current_mail", "Khách");
         String pass = sharedPref.getString("current_pass", "Khách");
 
         txtName.setText(username);
         txtBirth.setText(birth);
         txtPhone.setText(phone);
+        txtAddress.setText(address);
         txtMail.setText(mail);
         txtPass.setText(pass);
     }

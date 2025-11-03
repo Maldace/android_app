@@ -14,6 +14,10 @@ public class CartManager {
     // 2. LƯU TRỮ CHUẨN: Map<PC, Integer> -> Sản phẩm và Số lượng
     private final Map<PC, Integer> cartItems = new HashMap<>();
 
+//    ArrayList<PC> cartList = new ArrayList<>();  // danh sách các PC trong giỏ
+//    CartAdapter adapter = new CartAdapter(this, cartList, this);
+
+
     // Constructor private
     private CartManager() {}
 
@@ -79,7 +83,7 @@ public class CartManager {
             PC pc = entry.getKey();
             int quantity = entry.getValue();
             // LƯU Ý: Dòng này yêu cầu lớp CartItem phải tồn tại và có constructor phù hợp
-            // items.add(new CartItem(pc, quantity));
+             items.add(new CartItem(pc, quantity));
         }
         return items;
     }

@@ -4,6 +4,7 @@ import android.os.Parcelable;
 
 public class User{
 
+    private String address;
     private String birth;
     private String mail;
     private String name;
@@ -13,8 +14,9 @@ public class User{
     public User() {
     }
 
-    public User(String birth, String mail, String name, String pass,
+    public User(String address, String birth, String mail, String name, String pass,
                 String phone, String role) {
+        this.address = address;
         this.birth = birth;
         this.mail = mail;
         this.name = name;
@@ -23,6 +25,8 @@ public class User{
         this.role = role;
     }
 
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
     public String getBirth() { return birth; }
     public void setBirth(String birth) { this.birth = birth; }
 

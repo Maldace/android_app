@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                                 editor.putString("current_phone", String.valueOf(usr.getPhone()));
                                 editor.putString("current_mail", usr.getMail());
                                 editor.putString("current_pass", usr.getPass());
+                                editor.putString("current_address", usr.getAddress());
                                 editor.apply();
 
                                 // BƯỚC 2: Chuyển sang HomeActivity
