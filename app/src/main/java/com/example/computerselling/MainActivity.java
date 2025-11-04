@@ -74,17 +74,27 @@ public class MainActivity extends AppCompatActivity {
         String username = etUsername.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         db.collection("Acc")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+
+                        boolean loginSuccessful = false; // <-- BIẾN CỜ MỚI
+
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            // Chuyển document thành Object PC
+                            // Chuyển document thành Object PC (Lưu ý: Tên class phải là User)
                             User usr = document.toObject(User.class);
 
                             if(username.equals(usr.getName()) && password.equals(usr.getPass())){
 
-                                // BƯỚC 1: LƯU USERNAME VÀO SharedPreferences (Đã sửa lỗi key)
+                                loginSuccessful = true; // <-- Đặt cờ là TRUE khi tìm thấy khớp
+
+                                // BƯỚC 1: LƯU USERNAME VÀO SharedPreferences
                                 SharedPreferences sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPref.edit();
 
@@ -106,36 +116,24 @@ public class MainActivity extends AppCompatActivity {
                                     startActivity(intent);
                                 }
 
-                                // Đóng LoginActivity
+                                // Đóng LoginActivity VÀ KẾT THÚC VÒNG LẶP NGAY LẬP TỨC
                                 finish();
-
+                                return; // Quan trọng: Thoát khỏi OnCompleteListener
                             }
                         }
-                        Toast.makeText(this, "Sai tên đăng nhập hoặc mật khẩu!", Toast.LENGTH_SHORT).show();
+
+                        // KIỂM TRA CỜ SAU KHI VÒNG LẶP KẾT THÚC
+                        if (!loginSuccessful) {
+                            // Chỉ thông báo lỗi nếu vòng lặp kết thúc mà cờ vẫn là false
+                            Toast.makeText(this, "Sai tên đăng nhập hoặc mật khẩu!", Toast.LENGTH_SHORT).show();
+                        }
+
                     } else {
+                        // Xử lý khi có lỗi kết nối/Firestore
+                        Toast.makeText(this, "Đã xảy ra lỗi kết nối. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
                         Log.w("Firestore", "Error getting documents.", task.getException());
                     }
                 });
-
-//        if (username.equals("ThanhPhuoc") && password.equals("1234")) {
-//
-//            // BƯỚC 1: LƯU USERNAME VÀO SharedPreferences (Đã sửa lỗi key)
-//            SharedPreferences sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-//            SharedPreferences.Editor editor = sharedPref.edit();
-//
-//            editor.putString("current_username", username);
-//            editor.apply();
-//
-//            // BƯỚC 2: Chuyển sang HomeActivity
-//            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-//            startActivity(intent);
-//
-//            // Đóng LoginActivity
-//            finish();
-//
-//        } else {
-//            Toast.makeText(this, "Sai tên đăng nhập hoặc mật khẩu!", Toast.LENGTH_SHORT).show();
-//        }
     }
 
 // ---------------------------------------------------------------------------------------
