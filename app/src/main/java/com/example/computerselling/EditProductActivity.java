@@ -60,7 +60,7 @@ public class EditProductActivity extends AppCompatActivity {
         db.collection("Computer").document(id) // ID document cần xóa
                 .delete()
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Xóa thành công!", Toast.LENGTH_SHORT).show();
+
 
                 })
                 .addOnFailureListener(e -> {
@@ -75,11 +75,12 @@ public class EditProductActivity extends AppCompatActivity {
         CollectionReference collectionRef = db.collection("Computer");
         collectionRef.get().addOnSuccessListener(querySnapshot -> {
 
-            PC mypc = new PC(description, discount, currentProduct.getId(), img, product, price, price-(price*(100/discount)) );
+            PC mypc = new PC(description, discount, currentProduct.getId(), img, product, price, price-(price*(100/discount)), null );
             collectionRef.add(mypc)
                     .addOnSuccessListener(documentReference -> {
 //                        Intent intent = new Intent(AddActivity.this, HomeAdminActivity.class);
 //                        startActivity(intent);
+                        Toast.makeText(this, "Sửa thành công!", Toast.LENGTH_SHORT).show();
                     })
                     .addOnFailureListener(e -> {
                         Log.e("Firestore", "Lỗi khi thêm document", e);

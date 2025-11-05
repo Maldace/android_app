@@ -7,7 +7,9 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -15,11 +17,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,18 +41,15 @@ public class ProductDetailUserActivity extends AppCompatActivity {
     String id;
     PC currentProduct;
 
-    // Biến trạng thái Yêu thích và ID người dùng
     private boolean isFavorite = false;
-    private String currentUserId = "test_user_id_12345"; // ID người dùng giả định
+    private String currentUserId = "test_user_id_12345";
 
-    // Khai báo SharedPreferences và UserName ở cấp Class
     private SharedPreferences sharedPref;
-    private String currentUserName = "Khách"; // Giá trị mặc định ban đầu
+    private String currentUserName = "Khách";
 
-    // ImageView cho ảnh sản phẩm
-    private ImageView productImage;
+    private ViewPager2 viewPager;
+    private TabLayout tabLayout;
 
-    // Các View cho chức năng COMMENT
     private EditText etCommentInput;
     private Button btnPostComment;
     private RecyclerView rvComments;
@@ -60,65 +63,74 @@ public class ProductDetailUserActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        // ************************************************************
-        // KHỞI TẠO SHARED PREFERENCES VÀ LẤY TÊN NGƯỜI DÙNG (ĐÃ SỬA LỖI)
-        // ************************************************************
         sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        // Lấy tên người dùng sau khi sharedPref đã được khởi tạo
         currentUserName = sharedPref.getString("current_username", "Khách");
-        // currentUserId có thể được lấy tương tự từ SharedPreferences nếu cần
 
-        // -------------------------------------------------------------------
-        // ÁNH XẠ VIEW
-        // -------------------------------------------------------------------
+        // Ánh xạ View
+        viewPager = findViewById(R.id.product_image_slider);
+        tabLayout = findViewById(R.id.product_image_indicator);
 
-        productImage = findViewById(R.id.product_image);
         TextView txtName = findViewById(R.id.product_detail_name);
         TextView txtPrice = findViewById(R.id.product_detail_price);
+        TextView txtOrPrice = findViewById(R.id.product_detail_or_price);
         TextView txtDescription = findViewById(R.id.product_detail_description);
         ImageView btnBack = findViewById(R.id.btnBack);
         Button btnAddToCart = findViewById(R.id.btn_add_to_cart);
         ImageButton btnFavorite = findViewById(R.id.btn_favorite);
         Button btnBuyNow = findViewById(R.id.btn_buy_now);
 
-        // ÁNH XẠ VIEW COMMENT
         etCommentInput = findViewById(R.id.et_comment_input);
         btnPostComment = findViewById(R.id.btn_post_comment);
         rvComments = findViewById(R.id.rv_comments);
-
 
         Intent intent = getIntent();
         currentProduct = intent.getParcelableExtra("selected_pc");
 
         if (currentProduct != null) {
 
-            // -------------------------------------------------------------------
-            // HIỂN THỊ THÔNG TIN SẢN PHẨM
-            // -------------------------------------------------------------------
             txtName.setText(currentProduct.getName());
-            String formattedPrice = String.format(Locale.getDefault(), "%,d VNĐ", currentProduct.getPrice());
-            txtPrice.setText(formattedPrice);
             txtDescription.setText(currentProduct.getDescription());
             id = currentProduct.getId();
 
-            // XỬ LÝ ẢNH BẰNG GLIDE
-            String imageUrl = currentProduct.getImageUrl();
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                Glide.with(this).load(imageUrl).into(productImage);
+            // 🧩 --- BẮT ĐẦU: XỬ LÝ HIỂN THỊ GIÁ ---
+            if (currentProduct.getOriginalPrice() > 0 && currentProduct.getOriginalPrice() > currentProduct.getPrice()) {
+                // Format giá gốc
+                String formattedOriginal = String.format(Locale.getDefault(), "%,d VNĐ", currentProduct.getOriginalPrice());
+                txtOrPrice.setText(formattedOriginal);
+                txtOrPrice.setTextColor(Color.GRAY); // Màu xám
+                txtOrPrice.setTextSize(14); // Nhỏ hơn
+                txtOrPrice.setPaintFlags(txtOrPrice.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG); // Gạch ngang
+                txtOrPrice.setVisibility(View.VISIBLE);
             } else {
-                Glide.with(this).load("https://via.placeholder.com/300?text=No+Image").into(productImage);
+                txtOrPrice.setVisibility(View.GONE); // Ẩn nếu không có giảm giá
             }
 
-            // 1. KIỂM TRA TRẠNG THÁI YÊU THÍCH BAN ĐẦU
+            // Format giá giảm
+            String formattedDiscount = String.format(Locale.getDefault(), "%,d VNĐ", currentProduct.getPrice());
+            txtPrice.setText(formattedDiscount);
+            txtPrice.setTextColor(Color.parseColor("#DC3545")); // Màu đỏ
+            txtPrice.setTextSize(20); // To hơn
+
+            // Tính và hiển thị phần trăm giảm giá
+            if (currentProduct.getOriginalPrice() > 0 && currentProduct.getOriginalPrice() > currentProduct.getPrice()) {
+                double percent = ((double) (currentProduct.getOriginalPrice() - currentProduct.getPrice()) / currentProduct.getOriginalPrice()) * 100;
+                String discountText = String.format(Locale.getDefault(), "  (Giảm %.1f%%)", percent);
+                txtPrice.append(discountText);
+            }
+            // 🧩 --- KẾT THÚC: XỬ LÝ HIỂN THỊ GIÁ ---
+
+            // Load ảnh
+            loadProductImages();
+
+            // Yêu thích
             checkInitialFavoriteState(btnFavorite);
 
-            // 2. KHỞI TẠO RECYCLERVIEW VÀ ADAPTER CHO BÌNH LUẬN
+            // Bình luận
             commentsList = new ArrayList<>();
             commentAdapter = new CommentAdapter(commentsList);
             rvComments.setLayoutManager(new LinearLayoutManager(this));
             rvComments.setAdapter(commentAdapter);
 
-            // 3. TẢI BÌNH LUẬN BAN ĐẦU
             loadComments();
 
         } else {
@@ -127,22 +139,10 @@ public class ProductDetailUserActivity extends AppCompatActivity {
             return;
         }
 
-        // --- Xử lý sự kiện Nút Back ---
         btnBack.setOnClickListener(v -> finish());
-
-        // ************************************************************
-        // LOGIC CHỨC NĂNG GỬI COMMENT
-        // ************************************************************
         btnPostComment.setOnClickListener(v -> postComment());
-
-        // ************************************************************
-        // LOGIC CHỨC NĂNG YÊU THÍCH SẢN PHẨM
-        // ************************************************************
         btnFavorite.setOnClickListener(v -> toggleFavoriteState(btnFavorite));
 
-        // ************************************************************
-        // LOGIC CHỨC NĂNG GIỎ HÀNG/MUA NGAY
-        // ************************************************************
         btnAddToCart.setOnClickListener(v -> {
             CartManager.getInstance().addToCart(currentProduct);
             Toast.makeText(this, "Đã thêm " + currentProduct.getName() + " vào giỏ hàng!", Toast.LENGTH_SHORT).show();
@@ -157,28 +157,46 @@ public class ProductDetailUserActivity extends AppCompatActivity {
         });
     }
 
-    // --- PHƯƠNG THỨC HỖ TRỢ CHỨC NĂNG COMMENT ---
+    // =====================================================
+    // PHẦN CÒN LẠI (GIỮ NGUYÊN)
+    // =====================================================
 
-    /**
-     * Tải các bình luận hiện có của sản phẩm từ Firestore.
-     */
-    // ... trong ProductDetailUserActivity.java
+    private void loadProductImages() {
+        List<String> finalImageUrls = new ArrayList<>();
+        String mainImageUrl = currentProduct.getImageUrl();
+        if (mainImageUrl != null && !mainImageUrl.isEmpty()) {
+            finalImageUrls.add(mainImageUrl);
+        }
+        List<String> secondaryUrls = currentProduct.getSubImgUrls();
+        if (secondaryUrls != null && !secondaryUrls.isEmpty()) {
+            for (String url : secondaryUrls) {
+                if (url != null && !url.isEmpty() && !finalImageUrls.contains(url)) {
+                    finalImageUrls.add(url);
+                }
+            }
+        }
+        if (finalImageUrls.isEmpty()) {
+            finalImageUrls.add("https://via.placeholder.com/300?text=No+Image");
+        }
 
-    /**
-     * Tải các bình luận hiện có của sản phẩm từ Firestore (Lọc theo productName).
-     */
+        ProductImageSliderAdapter sliderAdapter = new ProductImageSliderAdapter(finalImageUrls);
+        viewPager.setAdapter(sliderAdapter);
+
+        if (finalImageUrls.size() > 1) {
+            new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {}).attach();
+        } else {
+            tabLayout.setVisibility(View.GONE);
+        }
+    }
+
     private void loadComments() {
         if (currentProduct == null) return;
 
         db.collection("Comment")
-                // ĐÃ CHỈNH SỬA: LỌC THEO productName, KHÔNG PHẢI productId
                 .whereEqualTo("productName", currentProduct.getName())
-                // CÓ THỂ BỊ LỖI SẮP XẾP NẾU TIMESTAMP LÀ STRING, NHƯNG TA VẪN GIỮ CÂU LỆNH NẾU BẠN MUỐN
-                // Bạn cần tạo Index trong Firestore console nếu chưa có
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    // Chuyển đổi Firestore documents sang List<Comment>
                     List<Comment> loadedComments = queryDocumentSnapshots.toObjects(Comment.class);
                     commentAdapter.setComments(loadedComments);
                 })
@@ -188,43 +206,23 @@ public class ProductDetailUserActivity extends AppCompatActivity {
                 });
     }
 
-
     private void postComment() {
         if (currentProduct == null) return;
-
         String content = etCommentInput.getText().toString().trim();
-
         if (content.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập nội dung bình luận.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // TẠO TIMESTAMP DƯỚI DẠNG CHUỖI NHƯ CẤU TRÚC FIRESTORE CỦA BẠN
-        // Có thể dùng SimpleDateFormat để tạo chuỗi ngày giờ đầy đủ: "November 4, 2025 at 9:07:29 PM UTC+7"
-        // HOẶC sử dụng giá trị đơn giản hơn nếu logic loadComments() không cần lọc theo ngày.
-
-        // Giả định sử dụng SimpleDateFormat:
         String timestampString = new java.text.SimpleDateFormat("MMMM d, yyyy 'at' hh:mm:ss a z", Locale.ENGLISH).format(new java.util.Date());
+        Comment newComment = new Comment(currentProduct.getName(), currentUserName, content, timestampString);
 
-
-        // ĐÃ CHỈNH SỬA: SỬ DỤNG productName, username, và timestamp là String
-        Comment newComment = new Comment(
-                currentProduct.getName(),  // <--- Gửi Tên sản phẩm
-                currentUserName,           // <--- Gửi username
-                content,                   // content
-                timestampString            // <--- Gửi timestamp dưới dạng String
-        );
-
-        // Lưu vào Collection 'Comments'
         db.collection("Comment")
                 .add(newComment)
                 .addOnSuccessListener(documentReference -> {
                     newComment.setId(documentReference.getId());
-
-                    // HIỂN THỊ TỨC THÌ TRÊN UI
                     commentAdapter.addComment(newComment);
                     rvComments.scrollToPosition(0);
-
                     etCommentInput.setText("");
                     Toast.makeText(this, "Bình luận đã được gửi!", Toast.LENGTH_SHORT).show();
                 })
@@ -234,19 +232,12 @@ public class ProductDetailUserActivity extends AppCompatActivity {
                 });
     }
 
-// ...
-
-// ...
-
-    // --- CÁC PHƯƠNG THỨC HỖ TRỢ CHỨC NĂNG YÊU THÍCH (GIỮ NGUYÊN) ---
-
     private void checkInitialFavoriteState(ImageButton btnFavorite) {
         db.collection("Users").document(currentUserId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         ArrayList<String> favorites = (ArrayList<String>) documentSnapshot.get("favorites");
-
                         if (favorites != null && favorites.contains(currentProduct.getId())) {
                             isFavorite = true;
                         }
@@ -294,5 +285,43 @@ public class ProductDetailUserActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    public static class ProductImageSliderAdapter extends RecyclerView.Adapter<ProductImageSliderAdapter.ImageViewHolder> {
+        private final List<String> imageList;
+
+        public ProductImageSliderAdapter(List<String> imageList) {
+            this.imageList = imageList;
+        }
+
+        public static class ImageViewHolder extends RecyclerView.ViewHolder {
+            ImageView imageView;
+            public ImageViewHolder(@NonNull View itemView) {
+                super(itemView);
+                imageView = itemView.findViewById(R.id.slider_image_view);
+            }
+        }
+
+        @NonNull
+        @Override
+        public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_image_slider, parent, false);
+            return new ImageViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
+            String imageUrl = imageList.get(position);
+            Glide.with(holder.imageView.getContext())
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_placeholder)
+                    .error(R.drawable.ic_error)
+                    .into(holder.imageView);
+        }
+
+        @Override
+        public int getItemCount() {
+            return imageList.size();
+        }
     }
 }

@@ -2,32 +2,28 @@ package com.example.computerselling;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.util.List;
 import java.util.Objects;
 
 public class PC implements Parcelable {
 
     private String description;
-    private int discountPercent; // Phần trăm giảm giá (ví dụ: 15)
+    private int discountPercent;
     private String id;
     private String imageUrl;
     private String name;
-    private long originalPrice; // Giá gốc chưa giảm
-    private long price;         // Giá đã giảm (giá bán)
+    private long originalPrice;
+    private long price;
+    private List<String> subImgUrls; // Mảng URL ảnh phụ
 
     // ==========================================================
     // 1. CONSTRUCTORS
     // ==========================================================
-
-    /**
-     * Constructor KHÔNG đối số. BẮT BUỘC cho Firebase/Firestore
-     */
     public PC() {
     }
 
-    /**
-     * Constructor đầy đủ
-     */
-    public PC(String description, int discountPercent, String id, String imageUrl, String name, long originalPrice, long price) {
+    public PC(String description, int discountPercent, String id, String imageUrl, String name, long originalPrice, long price, List<String> subImgUrls) {
         this.description = description;
         this.discountPercent = discountPercent;
         this.id = id;
@@ -35,12 +31,12 @@ public class PC implements Parcelable {
         this.name = name;
         this.originalPrice = originalPrice;
         this.price = price;
+        this.subImgUrls = subImgUrls;
     }
 
     // ==========================================================
-    // 2. GETTERS VÀ SETTERS (Bắt buộc cho Firebase/Firestore)
+    // 2. GETTERS VÀ SETTERS
     // ==========================================================
-
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -62,11 +58,17 @@ public class PC implements Parcelable {
     public int getDiscountPercent() { return discountPercent; }
     public void setDiscountPercent(int discountPercent) { this.discountPercent = discountPercent; }
 
+    public List<String> getSubImgUrls() {
+        return subImgUrls;
+    }
+
+    public void setSubImgUrls(List<String> subImgUrls) {
+        this.subImgUrls = subImgUrls;
+    }
 
     // ==========================================================
     // 3. EQUALS VÀ HASHCODE
     // ==========================================================
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -81,12 +83,8 @@ public class PC implements Parcelable {
     }
 
     // ==========================================================
-    // 4. PARCELABLE IMPLEMENTATION
+    // 4. PARCELABLE IMPLEMENTATION (ĐÃ CẬP NHẬT)
     // ==========================================================
-
-    /**
-     * Constructor được Parcel sử dụng để tái tạo đối tượng từ dữ liệu đã ghi.
-     */
     protected PC(Parcel in) {
         id = in.readString();
         name = in.readString();
@@ -95,11 +93,10 @@ public class PC implements Parcelable {
         description = in.readString();
         originalPrice = in.readLong();
         discountPercent = in.readInt();
+        // Đã thêm: Đọc List<String>
+        subImgUrls = in.createStringArrayList();
     }
 
-    /**
-     * Creator static bắt buộc cho Parcelable.
-     */
     public static final Creator<PC> CREATOR = new Creator<PC>() {
         @Override
         public PC createFromParcel(Parcel in) {
@@ -117,9 +114,6 @@ public class PC implements Parcelable {
         return 0;
     }
 
-    /**
-     * Ghi các thuộc tính của đối tượng vào Parcel để truyền đi.
-     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
@@ -129,5 +123,7 @@ public class PC implements Parcelable {
         dest.writeString(description);
         dest.writeLong(originalPrice);
         dest.writeInt(discountPercent);
+        // Đã thêm: Ghi List<String>
+        dest.writeStringList(subImgUrls);
     }
 }

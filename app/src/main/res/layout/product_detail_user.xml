@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F0F2F5"
-    tools:context=".ProductDetailActivity">
+    tools:context=".ProductDetailUserActivity">
 
     <ImageView
         android:id="@+id/btnBack"
@@ -53,29 +53,43 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="8dp">
 
-                <ImageView
-                    android:id="@+id/product_image"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:contentDescription="Ảnh sản phẩm"
-                    android:background="#E0E0E0" />
+                    android:layout_height="match_parent">
 
-                <ImageButton
-                    android:id="@+id/btn_favorite"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_favorite_border_24"
-                    android:background="@drawable/button_round_corners"
-                    android:backgroundTint="#CCCCCC"
-                    android:scaleType="fitCenter"
-                    android:padding="8dp"
-                    android:layout_gravity="top|end"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Yêu thích"
-                    app:tint="@android:color/white"
-                    app:cornerRadius="8dp"/>
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/product_image_slider"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/product_image_indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_gravity="bottom"
+                        app:tabGravity="center"
+                        app:tabIndicatorHeight="0dp"
+                        app:tabBackground="@drawable/tab_indicator_selector"
+                        android:background="@android:color/transparent"
+                        android:layout_marginBottom="8dp"/>
+
+                    <ImageButton
+                        android:id="@+id/btn_favorite"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_favorite_border_24"
+                        android:background="@drawable/button_round_corners"
+                        android:backgroundTint="#CCCCCC"
+                        android:scaleType="fitCenter"
+                        android:padding="8dp"
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:contentDescription="Yêu thích"
+                        app:tint="@android:color/white"
+                        app:cornerRadius="8dp"/>
+
+                </FrameLayout>
 
             </androidx.cardview.widget.CardView>
 
@@ -89,15 +103,25 @@
                 android:layout_marginBottom="8dp"
                 tools:text="SingPC AIO i5 - 13.590.000 VND" />
 
-            <TextView
-                android:id="@+id/product_detail_price"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="#DC3545"
-                android:layout_marginBottom="16dp"
-                tools:text="13,590,000 VND" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/product_detail_or_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/product_detail_price"
+                    android:textColor="#F60920"
+                    android:textSize="40dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -105,25 +129,46 @@
                 android:text="Màu sắc:"
                 android:textSize="16sp"
                 android:textColor="#666666"
-                android:layout_marginBottom="8dp"/>
-            <LinearLayout
+                android:layout_marginBottom="4dp"/>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_color"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="10dp"
+                app:chipSpacingHorizontal="6dp"
+                app:singleSelection="true">
 
-                <Button
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_color_grey"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="Xám" />
-                <Button
+                    android:text="Xám"
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_color_white"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Trắng"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-            </LinearLayout>
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+            </com.google.android.material.chip.ChipGroup>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -131,25 +176,46 @@
                 android:text="RAM:"
                 android:textSize="16sp"
                 android:textColor="#666666"
-                android:layout_marginBottom="8dp"/>
-            <LinearLayout
+                android:layout_marginBottom="4dp"/>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_ram"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="10dp"
+                app:chipSpacingHorizontal="6dp"
+                app:singleSelection="true">
 
-                <Button
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_ram_8gb"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="8 GB" />
-                <Button
+                    android:text="8 GB"
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_ram_16gb"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="16 GB"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-            </LinearLayout>
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+            </com.google.android.material.chip.ChipGroup>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -157,33 +223,61 @@
                 android:text="Ổ cứng:"
                 android:textSize="16sp"
                 android:textColor="#666666"
-                android:layout_marginBottom="8dp"/>
-            <LinearLayout
+                android:layout_marginBottom="4dp"/>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_storage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                app:chipSpacingHorizontal="6dp"
+                app:singleSelection="true">
 
-                <Button
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_storage_256ssd"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="SSD 256 GB" />
-                <Button
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:text="SSD 256 GB"
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_storage_512ssd"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="SSD 512 GB" />
-                <Button
+                    android:text="SSD 512 GB"
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_storage_1tbssd"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="SSD 1 TB"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-            </LinearLayout>
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
 
-
+            </com.google.android.material.chip.ChipGroup>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -267,7 +361,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:background="@color/white"
+        android:background="@android:color/white"
         android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -297,7 +391,7 @@
             android:text="MUA NGAY"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:backgroundTint="#FF9800"
+            android:backgroundTint="#0543F2"
             android:textColor="@android:color/white"
             app:cornerRadius="8dp"
             android:layout_marginStart="8dp"/>

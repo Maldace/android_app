@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,6 +54,10 @@ public class RegisterActivity extends AppCompatActivity {
 //                Log.d("Firestore", "Item added with ID: " + docId);
 //                // Nếu bạn muốn lưu id vào document (optional):
 //                documentReference.update("id", docId);
+                    Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Error adding item", e);

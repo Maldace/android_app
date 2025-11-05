@@ -105,25 +105,156 @@
                 android:text="Màu sắc:"
                 android:textSize="16sp"
                 android:textColor="#666666"
-                android:layout_marginBottom="8dp"/>
-            <LinearLayout
+                android:layout_marginBottom="4dp"/>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_color"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="10dp"
+                app:chipSpacingHorizontal="6dp"
+                app:singleSelection="true">
 
-                <Button
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_color_grey"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="Xám" />
-                <Button
+                    android:text="Xám"
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_color_white"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Trắng"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-            </LinearLayout>
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RAM:"
+                android:textSize="16sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="4dp"/>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_ram"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                app:chipSpacingHorizontal="6dp"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_ram_8gb"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="8 GB"
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_ram_16gb"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="16 GB"
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ổ cứng:"
+                android:textSize="16sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="4dp"/>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_storage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:chipSpacingHorizontal="6dp"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_storage_256ssd"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SSD 256 GB"
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_storage_512ssd"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SSD 512 GB"
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_storage_1tbssd"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SSD 1 TB"
+                    app:chipMinHeight="36dp"
+                    app:chipCornerRadius="8dp"
+                    app:chipBackgroundColor="@color/chip_background_selector_stylish"
+                    android:textColor="@color/chip_text_selector_stylish"
+                    app:chipStrokeColor="@color/chip_stroke_selector_stylish"
+                    app:chipStrokeWidth="1dp"
+                    app:textStartPadding="10dp"
+                    app:textEndPadding="10dp" />
+
+            </com.google.android.material.chip.ChipGroup>
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -219,7 +350,7 @@
             android:text="MUA NGAY"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:backgroundTint="#FF9800"
+            android:backgroundTint="#0543F2"
             android:textColor="@android:color/white"
             app:cornerRadius="8dp"
             android:layout_marginStart="8dp"/>

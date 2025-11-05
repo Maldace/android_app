@@ -44,7 +44,7 @@ public class AddActivity extends AppCompatActivity {
             // Tạo id mới = số lượng + 1
             int id = count + 1;
 
-            PC mypc = new PC(description, discount, String.valueOf(id), img, product, price, price-(price*(100/discount)) );
+            PC mypc = new PC(description, discount, String.valueOf(id), img, product, price, price-(price*(100/discount)), null );
             collectionRef.add(mypc)
                     .addOnSuccessListener(documentReference -> {
                         Intent intent = new Intent(AddActivity.this, HomeAdminActivity.class);

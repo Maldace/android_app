@@ -65,4 +65,18 @@ dependencies {
     // THÊM: GLIDE (Thư viện tải và hiển thị ảnh từ URL)
 //    implementation 'com.github.bumptech.glide:glide:4.16.0'
 //    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    // ... các dependencies khác
+
+    // ViewPager2 (Thường đã có trong AndroidX)
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+
+    // CardView
+    implementation ("androidx.cardview:cardview:1.0.0")
+
+    // Glide (Thư viện tải ảnh, cần thiết cho ảnh từ URL)
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
+
+    // Material Design (để sử dụng TabLayout)
+    implementation ("com.google.android.material:material:1.11.0")
 }

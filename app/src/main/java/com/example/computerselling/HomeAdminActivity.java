@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView; // <<< THÊM: Import CardView
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -28,6 +29,9 @@ public class HomeAdminActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ListAdapter adapter;
     private String currentUsername;
+
+    // KHAI BÁO BIẾN MỚI CHO THỐNG KÊ
+    private CardView cardOpenStatistics; // <<< THÊM: Khai báo CardView
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,6 +85,24 @@ public class HomeAdminActivity extends AppCompatActivity {
                 intent.putExtra("username", currentUsername);
                 startActivity(intent);
             });
+        }
+
+        // ---------------------------------------------------------------------------------------
+        // THÊM: XỬ LÝ SỰ KIỆN CLICK CHO TRANG THỐNG KÊ
+        // ---------------------------------------------------------------------------------------
+
+        // Ánh xạ CardView Thống Kê (ID từ home_admin.xml)
+        cardOpenStatistics = findViewById(R.id.card_open_statistics); // <<< THÊM: Ánh xạ CardView
+
+        if (cardOpenStatistics != null) {
+            cardOpenStatistics.setOnClickListener(v -> {
+                // Khởi tạo Intent để chuyển sang AdminStatisticActivity
+                Intent intent = new Intent(HomeAdminActivity.this, AdminStatisticActivity.class);
+                startActivity(intent);
+            });
+        } else {
+            Log.e("HomeAdminActivity", "Không tìm thấy CardView có ID: card_open_statistics");
+            Toast.makeText(this, "Lỗi giao diện: Không tìm thấy nút Thống Kê.", Toast.LENGTH_LONG).show();
         }
     }
 
