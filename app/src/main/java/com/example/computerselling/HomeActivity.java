@@ -236,11 +236,6 @@ public class HomeActivity extends AppCompatActivity {
         gridView.requestLayout();
     }
 
-    public void add(View view){
-        Intent intent = new Intent(HomeActivity.this, AddActivity.class);
-        startActivity(intent);
-    }
-
     /**
      * Phương thức xử lý đăng xuất.
      * Xóa dữ liệu người dùng khỏi SharedPreferences và chuyển về màn hình Login.

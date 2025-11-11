@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView; // <<< THÊM: Import CardView
 
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,6 +30,8 @@ public class HomeAdminActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ListAdapter adapter;
     private String currentUsername;
+    private ArrayList<PC> filteredList; // Danh sách sản phẩm ĐÃ LỌC để hiển thị trên GridView
+    private SearchView searchView; // KHAI BÁO MỚI
 
     // KHAI BÁO BIẾN MỚI CHO THỐNG KÊ
     private CardView cardOpenStatistics; // <<< THÊM: Khai báo CardView
@@ -40,6 +43,7 @@ public class HomeAdminActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         aPC = new ArrayList<>();
+        filteredList = new ArrayList<>(); // KHỞI TẠO filteredList
 
         // 1. LẤY USERNAME TỪ SharedPreferences VÀ HIỂN THỊ
         SharedPreferences sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
@@ -56,12 +60,15 @@ public class HomeAdminActivity extends AppCompatActivity {
         // 2. Thiết lập GridView và Adapter
         gridView = findViewById(R.id.grid_view);
 
-        adapter = new ListAdapter(this, aPC);
+//        adapter = new ListAdapter(this, aPC);
+        adapter = new ListAdapter(this, filteredList);
         gridView.setAdapter(adapter);
+        searchView = findViewById(R.id.searchView); // ID đã thêm trong XML
+        setupSearchView(); // Gọi phương thức cài đặt tìm kiếm
 
         // 3. Xử lý sự kiện click Item trên GridView
         gridView.setOnItemClickListener((AdapterView<?> parent, View view, int position, long id) -> {
-            PC selectedPC = aPC.get(position);
+            PC selectedPC = filteredList.get(position);
 
             Intent intent = new Intent(HomeAdminActivity.this, ProductDetailActivity.class);
             intent.putExtra("selected_pc", selectedPC);
@@ -105,6 +112,59 @@ public class HomeAdminActivity extends AppCompatActivity {
             Toast.makeText(this, "Lỗi giao diện: Không tìm thấy nút Thống Kê.", Toast.LENGTH_LONG).show();
         }
     }
+// ---------------------------------------------------------------------------------------
+// PHẦN MỚI: TRIỂN KHAI CHỨC NĂNG TÌM KIẾM
+// ---------------------------------------------------------------------------------------
+
+    private void setupSearchView() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Xử lý khi người dùng nhấn nút tìm kiếm
+                filterProducts(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Xử lý khi văn bản thay đổi (Tìm kiếm theo thời gian thực)
+                filterProducts(newText);
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Hàm thực hiện lọc dữ liệu dựa trên văn bản tìm kiếm (query).
+     * @param query Văn bản người dùng nhập vào.
+     */
+    private void filterProducts(String query) {
+        // Xóa dữ liệu cũ trong danh sách hiển thị
+        filteredList.clear();
+
+        if (query == null || query.isEmpty()) {
+            // Nếu query rỗng, hiển thị toàn bộ danh sách gốc
+            filteredList.addAll(aPC);
+        } else {
+            String lowerCaseQuery = query.toLowerCase().trim();
+            // Lặp qua danh sách gốc (aPC) và kiểm tra
+            for (PC pc : aPC) {
+                // Lọc theo tên sản phẩm. Giả sử class PC có phương thức getName()
+                if (pc.getName() != null && pc.getName().toLowerCase().contains(lowerCaseQuery)) {
+                    filteredList.add(pc);
+                }
+            }
+        }
+
+        // Thông báo cho adapter biết dữ liệu đã thay đổi để GridView cập nhật
+        adapter.notifyDataSetChanged();
+        // Cập nhật chiều cao sau khi lọc
+        setDynamicHeight(gridView);
+
+        if (filteredList.isEmpty() && !query.isEmpty()) {
+            Toast.makeText(this, "Không tìm thấy sản phẩm nào.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 // ---------------------------------------------------------------------------------------
 
@@ -128,18 +188,28 @@ public class HomeAdminActivity extends AppCompatActivity {
         db.collection("Computer")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    aPC.clear();
+                    aPC.clear(); // Xóa list gốc
 
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         try {
                             PC pc = doc.toObject(PC.class);
                             if (pc != null) {
-                                pc.setId(doc.getId()); // Cập nhật ID từ document ID
+                                pc.setId(doc.getId());
                                 aPC.add(pc);
                             }
                         } catch (Exception e) {
                             Log.e("Firestore", "Lỗi ánh xạ dữ liệu Document: " + doc.getId(), e);
                         }
+                    }
+
+                    // Sau khi tải xong dữ liệu gốc (aPC), cập nhật filteredList để hiển thị
+                    // Nếu đã có văn bản tìm kiếm, giữ nguyên bộ lọc hiện tại.
+                    if (searchView.getQuery().toString().isEmpty()) {
+                        filteredList.clear();
+                        filteredList.addAll(aPC);
+                    } else {
+                        // Nếu đang có tìm kiếm, chạy lại bộ lọc với query hiện tại
+                        filterProducts(searchView.getQuery().toString());
                     }
 
                     adapter.notifyDataSetChanged();
