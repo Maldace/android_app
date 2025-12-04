@@ -42,4 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+    public void buy_history(View view){
+
+    }
 }

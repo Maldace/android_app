@@ -30,6 +30,7 @@
         <activity android:name=".EditProductActivity"></activity>
         <activity android:name=".ProductDetailUserActivity"></activity>
         <activity android:name=".HomeAdminActivity"></activity>
+        <activity android:name=".BuyHistoryActivity"></activity>
         <activity android:name=".CheckoutActivity" />
         <activity android:name=".AdminStatisticActivity" />
 

@@ -42,7 +42,6 @@ public class ProductDetailUserActivity extends AppCompatActivity {
     PC currentProduct;
 
     private boolean isFavorite = false;
-    private String currentUserId = "test_user_id_12345";
 
     private SharedPreferences sharedPref;
     private String currentUserName = "Khách";
@@ -232,42 +231,81 @@ public class ProductDetailUserActivity extends AppCompatActivity {
                 });
     }
 
-    private void checkInitialFavoriteState(ImageButton btnFavorite) {
-        db.collection("Users").document(currentUserId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        ArrayList<String> favorites = (ArrayList<String>) documentSnapshot.get("favorites");
-                        if (favorites != null && favorites.contains(currentProduct.getId())) {
-                            isFavorite = true;
-                        }
-                    }
-                    updateFavoriteUI(btnFavorite);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Lỗi khi kiểm tra trạng thái yêu thích", e);
-                    updateFavoriteUI(btnFavorite);
-                });
+    private void toggleFavoriteState(ImageButton btnFavorite) {
+        isFavorite = !isFavorite;                                     // Đảo trạng thái
+
+        updateFavoriteUI(btnFavorite);                                // Cập nhật giao diện
+
+        if (isFavorite) {
+            addFavoriteToFirestore();                                 // Nếu bật → thêm vào Favorite
+        } else {
+            removeFavoriteFromFirestore();                            // Nếu tắt → xoá khỏi Favorite
+        }
     }
 
-    private void toggleFavoriteState(ImageButton btnFavorite) {
-        isFavorite = !isFavorite;
-        updateFavoriteUI(btnFavorite);
-        updateFavoriteInFirestore();
+    private void addFavoriteToFirestore() {
+
+        // Tạo object lưu thông tin yêu thích
+        FavoriteModel fav = new FavoriteModel(
+                currentUserName,
+                currentProduct.getName()
+        );
+
+        db.collection("Favorite")
+                .add(fav)                                             // Thêm document mới
+                .addOnSuccessListener(doc -> {
+                    Toast.makeText(this, "Đã thêm vào yêu thích!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> Log.e("Favorite", "Lỗi thêm yêu thích", e));
     }
+
+    private void removeFavoriteFromFirestore() {
+
+        db.collection("Favorite")
+                .whereEqualTo("user", currentUserName)                 // Tìm theo người dùng
+                .whereEqualTo("product", currentProduct.getName())     // Tìm theo sản phẩm
+                .get()
+                .addOnSuccessListener(query -> {
+                    for (var doc : query.getDocuments()) {
+                        doc.getReference().delete();                   // Xoá document
+                    }
+                    Toast.makeText(this, "Đã xóa khỏi yêu thích!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> Log.e("Favorite", "Lỗi xóa yêu thích", e));
+    }
+
+    private void checkInitialFavoriteState(ImageButton btnFavorite) {
+
+        db.collection("Favorite")
+                .whereEqualTo("user", currentUserName)                  // Kiểm tra user
+                .whereEqualTo("product", currentProduct.getName())      // Kiểm tra sản phẩm
+                .get()
+                .addOnSuccessListener(query -> {
+                    isFavorite = !query.isEmpty();                      // Nếu có document → đã yêu thích
+                    updateFavoriteUI(btnFavorite);                      // Cập nhật icon
+                })
+                .addOnFailureListener(e -> Log.e("Favorite", "Lỗi kiểm tra yêu thích", e));
+    }
+
+
 
     private void updateFavoriteUI(ImageButton btnFavorite) {
         if (isFavorite) {
             btnFavorite.setImageResource(R.drawable.ic_favorite_24);
-            btnFavorite.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#DC3545")));
+            btnFavorite.setBackgroundTintList(
+                    ColorStateList.valueOf(Color.parseColor("#DC3545"))
+            );
         } else {
             btnFavorite.setImageResource(R.drawable.ic_favorite_border_24);
-            btnFavorite.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#CCCCCC")));
+            btnFavorite.setBackgroundTintList(
+                    ColorStateList.valueOf(Color.parseColor("#CCCCCC"))
+            );
         }
     }
 
+
     private void updateFavoriteInFirestore() {
-        DocumentReference userRef = db.collection("Users").document(currentUserId);
+        DocumentReference userRef = db.collection("Users").document(currentUserName);
         String productId = currentProduct.getId();
 
         if (isFavorite) {

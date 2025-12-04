@@ -176,8 +176,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="Thêm thông tin"
-            android:layout_marginStart="100dp"/>
+            android:text="Thêm thông tin"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:onClick="buy_history"
+            android:text="Lịch sử mua"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
