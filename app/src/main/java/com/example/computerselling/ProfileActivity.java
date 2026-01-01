@@ -43,6 +43,14 @@ public class ProfileActivity extends AppCompatActivity {
         finish();
     }
     public void buy_history(View view){
+        Intent intent = new Intent(ProfileActivity.this, BuyHistoryActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
+    public void favorite(View view){
+        Intent intent = new Intent(ProfileActivity.this, FavoriteActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

@@ -10,6 +10,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class CheckoutActivity extends AppCompatActivity {
@@ -36,11 +40,13 @@ public class CheckoutActivity extends AppCompatActivity {
         etPhone = findViewById(R.id.et_phone);
         etAddress = findViewById(R.id.et_address);
         SharedPreferences sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPref2 = getSharedPreferences("ProductPrefs", Context.MODE_PRIVATE);
 
         String username = sharedPref.getString("current_username", "Khách");
         String phone_num = sharedPref.getString("current_phone", "Khách");
         String addr = sharedPref.getString("current_address", "Khách");
-
+        String product = sharedPref2.getString("current_product", "Khách");
+        int quantity = sharedPref2.getInt("current_quantity", 0);
         etName.setText(username);
         etPhone.setText(phone_num);
         etAddress.setText(addr);
@@ -65,17 +71,29 @@ public class CheckoutActivity extends AppCompatActivity {
             // TODO: Ở đây bạn sẽ triển khai logic LƯU ĐƠN HÀNG vào Firestore/Database (Giữ lại chỗ trống này)
             // SaveOrderToFirebase(name, phone, address, total, cartManager.getCartItemList());
 
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            BuyHistoryModel item = new BuyHistoryModel(
+                    username,   // tên người mua
+                    product,   // tên sản phẩm
+                    quantity,      // số lượng
+            new SimpleDateFormat("dd/MM/yyyy").format(new Date())// ngày mua
+            );
+            db.collection("Buy history")
+                    .add(item)
+                    .addOnSuccessListener(doc -> {
+                        Toast.makeText(this, "Đặt hàng thành công! Cảm ơn quý khách đã đặt hàng.", Toast.LENGTH_LONG).show();
+                    })
+                    .addOnFailureListener(err -> {
+                        Toast.makeText(this, "Lỗi khi mua hàng", Toast.LENGTH_SHORT).show();
+                    });
+
             // 1. Xóa giỏ hàng (Sau khi "thanh toán" thành công)
             cartManager.clearCart();
-
-            // 2. Thông báo thành công và Cảm ơn Khách hàng
-            Toast.makeText(this, "Đặt hàng thành công! Cảm ơn quý khách đã đặt hàng.", Toast.LENGTH_LONG).show();
-
             // 3. Quay về màn hình chính (HomeActivity)
             Intent intent = new Intent(CheckoutActivity.this, HomeActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            finish(); // Đóng Activity hiện tại
+            finish();
         });
+        };
     }
-}

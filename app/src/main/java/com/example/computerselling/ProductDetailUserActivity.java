@@ -151,8 +151,14 @@ public class ProductDetailUserActivity extends AppCompatActivity {
 
         btnBuyNow.setOnClickListener(v -> {
             CartManager.getInstance().addToCart(currentProduct);
+            SharedPreferences sharedPref2 = getSharedPreferences("ProductPrefs", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref2.edit();
+            editor.putString("current_product", currentProduct.getName());
+            editor.putInt("current_quantity", 1);
+            editor.apply();
             Intent checkoutIntent = new Intent(ProductDetailUserActivity.this, CheckoutActivity.class);
             startActivity(checkoutIntent);
+
         });
     }
 

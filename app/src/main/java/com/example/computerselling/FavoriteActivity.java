@@ -15,34 +15,34 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BuyHistoryActivity extends AppCompatActivity {
+public class FavoriteActivity extends AppCompatActivity {
+
     String currentUser;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.buy_history);
-        RecyclerView recyclerView = findViewById(R.id.findViewById);
+        setContentView(R.layout.favorite);
+        RecyclerView recyclerView = findViewById(R.id.favorite);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        List<BuyHistoryModel> list = new ArrayList<>(); // tạo danh sách rỗng
-        BuyHistoryAdapter adapter = new BuyHistoryAdapter(list);
+        List<FavoriteModel> list = new ArrayList<>(); // tạo danh sách rỗng
+        FavoriteAdapter adapter = new FavoriteAdapter(list);
         recyclerView.setAdapter(adapter);
         SharedPreferences sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         currentUser = sharedPref.getString("current_username", "Khách");
         FirebaseFirestore db = FirebaseFirestore.getInstance(); // tạo Firestore
 
-        db.collection("Buy history")  // lấy collection đúng tên bạn
-                .whereEqualTo("buyer", currentUser) // chỉ lấy đơn hàng của user này
+        db.collection("Favorite")  // lấy collection đúng tên bạn
+                .whereEqualTo("user", currentUser) // chỉ lấy đơn hàng của user này
                 .get()
                 .addOnSuccessListener(query -> {  // khi lấy thành công
                     list.clear();                 // xóa danh sách cũ
 
                     for (DocumentSnapshot doc : query.getDocuments()) { // duyệt từng document
-                        BuyHistoryModel item = doc.toObject(BuyHistoryModel.class); // biến thành object
+                        FavoriteModel item = doc.toObject(FavoriteModel.class); // biến thành object
                         list.add(item);                                           // thêm vào list
                     }
 
                     adapter.notifyDataSetChanged(); // cập nhật RecyclerView
                 });
-
     }
 }
